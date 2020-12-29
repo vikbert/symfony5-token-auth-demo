@@ -32,7 +32,9 @@ symfony serve -d
 
 ## Test `/api/todos`
 ```bash
-# test api via REST client
+curl -i -X GET \
+   -H "Authorization:Bearer e0468e55008e489fc54f6558f48afc13" \
+ 'https://127.0.0.1:8000/api/todos'
 ```
 
 ## Development from scratch

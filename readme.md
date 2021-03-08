@@ -22,7 +22,7 @@ composer install
 
 ## Init database
 ```bash
-make db-update
+make db-init
 ```
 
 ## Development

@@ -8,6 +8,10 @@ help:
 .DEFAULT_GOAL := help
 
 #-- db
+db-init: ## init the database
+	symfony console doctrine:database:create -n
+	symfony console doctrine:schema:create -n
+	symfony console doctrine:fixtures:load -n
 db-update: ## update the database
 	symfony console make:migration
 	symfony console doctrine:migrations:migrate -n

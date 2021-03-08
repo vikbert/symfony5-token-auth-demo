@@ -44,14 +44,16 @@ symfony console make:auth
 symfony console debug:router
 
 # load test user into database
-symfony composer req orm-fixtures
+symfony composer req orm-fixtures 
+composer require zenstruck/foundry --dev
+
 symfony console make:migration
 symfony console doctrine:mi:mi -n
-symfony console make:fixtures 
+symfony console make:factory
+# create fake factory and fixture data for User 
 symfony console doctrine:fixtures:load
 
 symfony composer require --dev symfony/profiler-pack
-
 symfony console make:controller # ProfileController
 # protect the profile in controller
 $this->denyAccessUnlessGranted('ROLE_USER');
@@ -59,6 +61,7 @@ $this->denyAccessUnlessGranted('ROLE_USER');
 new RedirectResponse($this->urlGenerator->generate('app_profile'));
 
 # complete the implementation in LoginFormAuthenticator
+
 ```
 
 > more detailed info in `cli-protocol.md`

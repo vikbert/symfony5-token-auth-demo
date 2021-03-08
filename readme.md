@@ -30,7 +30,7 @@ make db-init
 symfony serve -d
 ```
 
-## Test `/api/todo`
+## Test `/api/todos`
 ```bash
 # test api via REST client
 ```

@@ -20,9 +20,19 @@
 composer install 
 ```
 
+## Init database
+```bash
+make db-update
+```
+
 ## Development
 ```bash
-symfony serve 
+symfony serve -d
+```
+
+## Test `/api/todo`
+```bash
+# test api via REST client
 ```
 
 ## Development from scratch
@@ -30,42 +40,39 @@ symfony serve
 symfony new symfony5-token-auth-demo
 cd symfony5-token-auth-demo
 
+# install maker
 symfony composer req maker
-symfony composer req security
 symfony composer req orm
-
 # enable sqlite config in .env
 DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"//
-symfony console make:user
 
-symfony composer req annotations 
-symfony composer req twig
-symfony console make:auth
-symfony console debug:router
+# create todo entity
+symfony console make:entity Todo
 
-# load test user into database
-symfony composer req orm-fixtures 
-composer require zenstruck/foundry --dev
-
-symfony console make:migration
-symfony console doctrine:mi:mi -n
+# load test todos into database
+symfony composer req orm-fixtures --dev
+symfony composer req zenstruck/foundry --dev
 symfony console make:factory
-# create fake factory and fixture data for User 
-symfony console doctrine:fixtures:load
 
-symfony composer require --dev symfony/profiler-pack
-symfony console make:controller # ProfileController
-# protect the profile in controller
-$this->denyAccessUnlessGranted('ROLE_USER');
-# update the redirect URL in LoginFormAuthenticator
-new RedirectResponse($this->urlGenerator->generate('app_profile'));
+# add the factory to fixtures
+make db-update
+# add TodoController to list todos
+symfony console make:controller # TodoController
+# add serializer pack to serialize the controller results
+symfony composer req symfony/serializer-pack
+# add subscriber to serialize the response to Json
 
-# complete the implementation in LoginFormAuthenticator
+# secure the API todos
+symfony composer req security
+symfony console make:user
+symfony console make:entity User
 
+make db-update
+
+symfony console make:auth
+# complete the implementation of ApiTokenAuthenticator
+...
 ```
-
-> more detailed info in `cli-protocol.md`
-
 
 ## licence
 

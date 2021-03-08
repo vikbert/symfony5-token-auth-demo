@@ -4,6 +4,7 @@ namespace App\Factory;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use JetBrains\PhpStorm\ArrayShape;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
 use Zenstruck\Foundry\RepositoryProxy;
@@ -28,6 +29,7 @@ final class UserFactory extends ModelFactory
 {
     private const DEFAULT_TOKEN = 'e0468e55008e489fc54f6558f48afc13';
 
+    #[ArrayShape(['email' => "string", 'token' => "string"])]
     protected function getDefaults(): array
     {
         return [

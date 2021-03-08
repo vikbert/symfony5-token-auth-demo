@@ -2,52 +2,67 @@
 
 namespace App\Security;
 
+use App\Repository\UserRepositoryInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use function Symfony\Component\String\u;
 
-class ApiTokenAuthenticator extends AbstractGuardAuthenticator
+class ApiTokenAuthenticator extends AbstractAuthenticator
 {
-    public function supports(Request $request)
+    const HEADER_PREFIX = 'Bearer ';
+
+    private UserRepositoryInterface $userRepository;
+
+    public function __construct(UserRepositoryInterface $userRepository)
     {
-        // todo
+        $this->userRepository = $userRepository;
     }
 
-    public function getCredentials(Request $request)
+    public function supports(Request $request): bool
     {
-        // todo
+        return u($request->getPathInfo())->startsWith('/api');
     }
 
-    public function getUser($credentials, UserProviderInterface $userProvider)
+    public function authenticate(Request $request): PassportInterface
     {
-        // todo
+        $tokenValue = $this->getAuthorizationToken($request);
+        $userBadge = new UserBadge(
+            $tokenValue, function ($tokenValue) {
+            $user = $this->userRepository->findOneByToken($tokenValue);
+
+            if (!$user) {
+                throw new UsernameNotFoundException();
+            }
+
+            return $user;
+        }
+        );
+
+        return new SelfValidatingPassport($userBadge);
     }
 
-    public function checkCredentials($credentials, UserInterface $user)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        // todo
+        return null;
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        // todo
+        return new JsonResponse(['error' => 'Authentication failed: invalid Bearer token!'], 401);
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey)
+    private function getAuthorizationToken(Request $request): string
     {
-        // todo
-    }
-
-    public function start(Request $request, AuthenticationException $authException = null)
-    {
-        // todo
-    }
-
-    public function supportsRememberMe()
-    {
-        // todo
+        return u($request->headers->get('Authorization', ''))
+            ->after(self::HEADER_PREFIX)
+            ->toString();
     }
 }

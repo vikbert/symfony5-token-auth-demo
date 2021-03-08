@@ -17,7 +17,6 @@
         "symfony/dotenv": "5.2.*",
         "symfony/flex": "^1.3.1",
         "symfony/framework-bundle": "5.2.*",
-        "symfony/maker-bundle": "^1.29",
         "symfony/proxy-manager-bridge": "5.2.*",
         "symfony/security-bundle": "5.2.*",
         "symfony/stopwatch": "5.2.*",
@@ -69,6 +68,7 @@
         }
     },
     "require-dev": {
-        "zenstruck/foundry": "^1.8"
+        "symfony/maker-bundle": "^1.29",
+        "zenstruck/foundry": "^1.7"
     }
 }
